@@ -1,0 +1,28 @@
+flowchart LR
+  U[Customers and staff] --> CDN[CDN / application tier]
+  CDN --> W[Transactional writes]
+  CDN --> R[Read-only catalogue and reporting]
+
+  subgraph UK1[Primary UK region]
+    PG[(PostgreSQL primary)]
+    ST[(Synchronous AZ standby)]
+    RR[(Read replica)]
+    M1[(MongoDB member 1)]
+    M2[(MongoDB member 2)]
+    PG -->|synchronous WAL| ST
+    PG -->|asynchronous WAL| RR
+    M1 <-->|replication| M2
+  end
+
+  subgraph UK2[Disaster-recovery region]
+    DR[(PostgreSQL DR replica)]
+    M3[(MongoDB voting member 3)]
+    BK[(Encrypted object backup)]
+  end
+
+  W --> PG
+  R --> RR
+  R --> M1
+  PG -->|asynchronous WAL| DR
+  M1 <-->|replication| M3
+  PG -->|daily backup + WAL archive| BK

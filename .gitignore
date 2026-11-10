@@ -1,0 +1,11 @@
+.env
+.DS_Store
+*.log
+*.tmp
+results/*.txt
+results/*.json
+evidence/*.png
+evidence/*.jpg
+evidence/*.pdf
+!evidence/README.md
+!portfolio-2-query-optimisation/results/README.md

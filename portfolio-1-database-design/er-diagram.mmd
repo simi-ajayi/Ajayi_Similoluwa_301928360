@@ -1,0 +1,89 @@
+erDiagram
+    CUSTOMERS ||--o{ ADDRESSES : has
+    CUSTOMERS ||--o{ ORDERS : places
+    ADDRESSES ||--o{ ORDERS : ships_to
+    CATEGORIES ||--o{ CATEGORIES : contains
+    CATEGORIES ||--o{ PRODUCTS : classifies
+    PRODUCTS ||--o{ PRODUCT_VARIANTS : offers
+    PRODUCT_VARIANTS ||--o{ INVENTORY : stocked_as
+    WAREHOUSES ||--o{ INVENTORY : holds
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    PRODUCT_VARIANTS ||--o{ ORDER_ITEMS : referenced_by
+    ORDERS ||--o{ PAYMENTS : paid_by
+    ORDERS ||--o{ SHIPMENTS : fulfilled_by
+    WAREHOUSES ||--o{ SHIPMENTS : dispatches
+
+    CUSTOMERS {
+      uuid customer_id PK
+      text email UK
+      text first_name
+      text last_name
+      timestamptz created_at
+    }
+    ADDRESSES {
+      uuid address_id PK
+      uuid customer_id FK
+      text city
+      text postcode
+      boolean is_default
+    }
+    CATEGORIES {
+      bigint category_id PK
+      bigint parent_category_id FK
+      text name
+      text slug UK
+    }
+    PRODUCTS {
+      uuid product_id PK
+      bigint category_id FK
+      text name
+      text brand
+      jsonb attributes
+    }
+    PRODUCT_VARIANTS {
+      uuid variant_id PK
+      uuid product_id FK
+      text sku UK
+      numeric unit_price
+    }
+    WAREHOUSES {
+      smallint warehouse_id PK
+      text name UK
+      text city
+    }
+    INVENTORY {
+      smallint warehouse_id PK,FK
+      uuid variant_id PK,FK
+      int quantity_on_hand
+      int quantity_reserved
+    }
+    ORDERS {
+      uuid order_id PK
+      uuid customer_id FK
+      uuid shipping_address_id FK
+      order_status status
+      numeric grand_total
+      timestamptz placed_at
+    }
+    ORDER_ITEMS {
+      bigint order_item_id PK
+      uuid order_id FK
+      uuid variant_id FK
+      int quantity
+      numeric unit_price
+      numeric line_total
+    }
+    PAYMENTS {
+      uuid payment_id PK
+      uuid order_id FK
+      text provider_reference UK
+      payment_status status
+      numeric amount
+    }
+    SHIPMENTS {
+      uuid shipment_id PK
+      uuid order_id FK
+      smallint warehouse_id FK
+      shipment_status status
+      text tracking_number UK
+    }
